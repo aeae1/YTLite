@@ -1,4 +1,4 @@
-name: Create YouTube Plus app
+name: Create free YouTube Plus app
 
 on:
   workflow_dispatch:
@@ -51,12 +51,6 @@ on:
         required: true
         type: string
 
-      tweak_version:
-        description: "The version of the tweak to use. Enter the version manually from dayanch96/YTLite/releases or leave default"
-        default: "6.0"
-        required: true
-        type: string
-
       display_name:
         description: "App Name (Optional)"
         default: "YouTube"
@@ -90,7 +84,6 @@ jobs:
       enable_ytabc: ${{ inputs.enable_ytabc }}
       enable_demc: ${{ inputs.enable_demc }}
       enable_localization: ${{ inputs.enable_localization }}
-      tweak_version: ${{ inputs.tweak_version }}
 
   package:
     name: Package IPA
@@ -109,7 +102,7 @@ jobs:
       - name: Hide sensitive inputs
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: bundle_id,display_name,enable_demc,enable_ryd,enable_ytabc,enable_youpip,enable_yq,enable_ytuhd,enable_localization,info_note,tweak_version
+          exclude_inputs: bundle_id,display_name,enable_demc,enable_ryd,enable_ytabc,enable_youpip,enable_yq,enable_ytuhd,enable_localization,info_note
 
       - name: Download and validate IPA
         run: |
@@ -138,16 +131,18 @@ jobs:
         run: |
           tweaks="ytplus.deb OpenYoutubeSafariExtension.appex"
           for f in *.deb; do
-            [ -f "$f" ] && tweaks="$tweaks $f"
+            if [ -f "$f" ] && [ "$f" != "ytplus.deb" ]; then
+              tweaks="$tweaks $f"
+            fi
           done
-          cyan -i youtube.ipa -o YouTubePlus_${{ github.event.inputs.tweak_version }}.ipa -uwef $tweaks -n "${{ github.event.inputs.display_name }}" -b ${{ github.event.inputs.bundle_id }}
+          cyan -i youtube.ipa -o YouTubePlus_6.0-free1.ipa -uwef $tweaks -n "${{ github.event.inputs.display_name }}" -b ${{ github.event.inputs.bundle_id }}
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ytp-${{ github.run_number }}
-          name: YouTubePlus v${{ github.event.inputs.tweak_version }} (${{ github.run_number }})
-          files: YouTubePlus_${{ github.event.inputs.tweak_version }}.ipa
+          name: YouTubePlus v6.0-free1 (${{ github.run_number }})
+          files: YouTubePlus_6.0-free1.ipa
           draft: true
 
       - name: Output Release URL

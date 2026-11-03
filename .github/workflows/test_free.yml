@@ -1,0 +1,67 @@
+name: Validate free YTPlus package
+
+on:
+  push:
+    branches: [main, free-ytplus-6]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package and analysis tools
+        run: |
+          brew install dpkg ldid
+          python3 -m pip install -r tests/requirements.txt
+      - name: Download original audited package
+        run: |
+          curl --fail --location --retry 3 \
+            'https://github.com/dayanch96/YTLite/releases/download/v6.0/com.dvntm.ytlite_6.0_iphoneos-arm.deb' \
+            --output ytplus.deb
+          python3 - <<'PY'
+          from pathlib import Path
+          from scripts.free_ytplus import PACKAGE_SHA256, digest, unpack
+          package = Path('ytplus.deb')
+          assert digest(package.read_bytes()) == PACKAGE_SHA256
+          unpack(package, Path('.test-original'))
+          PY
+      - name: Exercise original and modified ARM64 control flow
+        env:
+          YTPLUS_TEST_LIBRARY: .test-original/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib
+        run: python3 -m unittest discover -s tests -v
+      - name: Build and sign free package
+        run: python3 scripts/free_ytplus.py ytplus.deb
+      - name: Validate signed package contents
+        run: |
+          python3 - <<'PY'
+          import json
+          import plistlib
+          from pathlib import Path
+          from scripts.free_ytplus import BUNDLE_PATH, LIBRARY_PATH, PATCHES, account_string, digest, unpack
+          package = Path('ytplus.deb')
+          report = json.loads(Path('free-build-report.json').read_text())
+          assert report['package_sha256'] == digest(package.read_bytes())
+          unpack(package, Path('.test-free'))
+          for path in (Path('.test-free') / BUNDLE_PATH).glob('*.lproj/Localizable.strings'):
+              assert not any(account_string(key) for key in plistlib.loads(path.read_bytes()))
+          data = (Path('.test-free') / LIBRARY_PATH).read_bytes()
+          for name, offset, _, replacement in PATCHES:
+              assert data[offset:offset + len(replacement)] == replacement, name
+          assert 'Version: 6.0-free1' in Path('.test-free/DEBIAN/control').read_text()
+          PY
+          codesign --verify --verbose=2 '.test-free/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib'
+      - uses: actions/upload-artifact@v7
+        with:
+          name: YouTubePlus-6.0-free1
+          path: |
+            ytplus.deb
+            free-build-report.json
+          if-no-files-found: error
