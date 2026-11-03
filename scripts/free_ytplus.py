@@ -150,7 +150,7 @@ def make_package(package, report_path, localizations=None):
                     shutil.copytree(language, root / BUNDLE_PATH / language.name,
                                     dirs_exist_ok=True)
         translations = clean_localizations(root / BUNDLE_PATH)
-        subprocess.run(["ldid", "-S", str(library)], check=True)
+        subprocess.run(["ldid", "-S", "-Cadhoc", "-Hsha256", str(library)], check=True)
         control = root / "DEBIAN/control"
         control.write_text(re.sub(r"(?m)^Version:.*$", "Version: 6.0-free1", control.read_text()))
         checksums = []
