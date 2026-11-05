@@ -150,7 +150,13 @@ def make_package(package, report_path, localizations=None):
                     shutil.copytree(language, root / BUNDLE_PATH / language.name,
                                     dirs_exist_ok=True)
         translations = clean_localizations(root / BUNDLE_PATH)
-        subprocess.run(["ldid", "-S", "-Cadhoc", "-Hsha256", str(library)], check=True)
+        # ldid's default requirement assumes an Apple certificate, which an
+        # ad-hoc signature cannot satisfy. Use an empty requirements set so
+        # the verifier derives the normal ad-hoc identity from the code hash.
+        requirements = Path(directory) / "adhoc-requirements.bin"
+        requirements.write_bytes(struct.pack(">III", 0xFADE0C01, 12, 0))
+        subprocess.run(["ldid", "-S", "-Cadhoc", "-Hsha256",
+                        f"-Q{requirements}", str(library)], check=True)
         control = root / "DEBIAN/control"
         control.write_text(re.sub(r"(?m)^Version:.*$", "Version: 6.0-free1", control.read_text()))
         checksums = []
