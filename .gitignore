@@ -1,3 +1,19 @@
 .theos/
 packages/
 .DS_Store
+__pycache__/
+*.pyc
+.test-original/
+.test-free/
+ytplus.deb
+free-build-report.json
+
+# Downloaded apps, tool snapshots, and generated build artifacts
+vendor/
+theos/
+*.ipa
+*.deb
+*.cyan
+TrollFools_*.zip
+built-inputs.json
+.verified-core/

@@ -1,4 +1,18 @@
-# YouTube Plus (ex. YTLite)
+# Free YTPlus 6.0 build
+
+This fork builds the final YTPlus 6.0 package without YTPlus account activation. It keeps the original feature settings and uses a published, version-specific patch. The current upstream implementation is distributed as a compiled library; the older source files here are not its source code.
+
+- [How this build works and what is tested](docs/free-build.md)
+- [Security review and dependency choices](docs/security-review.md)
+- The main GitHub Actions workflow accepts an original decrypted YouTube IPA. All optional add-ons, including the Safari extension, are off by default.
+- Use a normal or separate bundle ID as needed. Prepared IPAs still require your own sideload signing. Preserved URL schemes do not establish that every app's universal links will work after re-signing.
+
+The build downloads only the locked core package and selected dependency snapshots. Unknown core versions, changed dependency bytes, malformed IPAs, and mismatched build artifacts fail validation. iPhone smoke testing is still required.
+
+---
+
+The original project's description and integration information follow below.
+
 A flexible enhancer for YouTube on iOS, featuring over hundred customizable options.
 
 ## Table of Contents
@@ -52,8 +66,9 @@ A flexible enhancer for YouTube on iOS, featuring over hundred customizable opti
 **Used open-source libraries are listed in the Open Source Libraries section**
 
 > [!NOTE]
-> Starting from version 5.2, YTPlus requires a subscription.  
-> The last free version is [5.2b4](https://github.com/dayanch96/YTLite/releases/tag/v5.2b4).
+> These workflows build the audited **6.0-free1** variant without a YTPlus subscription.
+> Unknown upstream versions are rejected. Native features requiring Google's
+> YouTube Premium service remain separate from this fork's local YTPlus features.
 
 ## FAQ
 - [🇺🇸 English FAQ](FAQs/FAQ_EN.md)
@@ -69,43 +84,33 @@ Review by [@qbap](https://github.com/qbap) on ONE Jailbreak: https://onejailbrea
 > If this your first time, complete following steps before starting:
 >
 > 1. Fork this repository using the fork button on the top right
-> 2. On your forked repository, go to **Repository Settings** > **Actions**, enable **Read and Write** permissions.
+> 2. Open the **Actions** tab in your fork and enable workflows. Job permissions are declared in the workflow files.
 
 <details>
   <summary>How to build the YouTube Plus app</summary>
   <ol>
-    <li>Click on <strong>Sync fork</strong>, and if your branch is out-of-date, click on <strong>Update branch</strong>.</li>
-    <li>Navigate to the <strong>Actions tab</strong> in your forked repository and select <strong>Create YouTube Plus app</strong>.</li>
+    <li>Use the <strong>free-ytplus-6</strong> branch until its changes are merged. Future upstream updates require a fresh binary audit.</li>
+    <li>Navigate to the <strong>Actions tab</strong> in your forked repository and select <strong>Create free YouTube Plus app</strong>.</li>
     <li>Click the <strong>Run workflow</strong> button located on the right side.</li>
     <li>Mark or unmark the tweaks you want to integrate. Learn more about them in the <a href="#tweak-integration-details">Tweak Integration Details</a> section.</li>
     <li>Prepare a decrypted .ipa file <em>(we cannot provide this due to legal reasons)</em>, then upload it to a file provider (e.g., filebin.net, filemail.com, or Dropbox is recommended). Paste the URL of the decrypted IPA file in the provided field.</li>
     <li><strong>NOTE:</strong> Make sure to provide a direct download link to the file, not a link to a webpage. Otherwise, the process will fail.</li>
-    <li>Enter the tweak version from the releases (the latest release is selected by default). You can also change the BundleID and Display Name if desired.</li>
+    <li>The tweak version is pinned to the audited 6.0-free1 build. You can change the BundleID and Display Name if desired.</li>
     <li>Make sure all inputs are correct, then click <strong>Run workflow</strong> to start the process.</li>
     <li>Wait for the build to finish. You can download the YouTube Plus app from the releases section of your forked repo. (If you can't find the releases section, go to your forked repo and add /releases to the URL, i.e., github.com/user/YTLite/releases.)</li>
   </ol>
 </details>
 
 
-<details>
-  <summary>How to build the YouTube Plus app with your own link for the YouTube Plus tweak</summary>
-  <ol>
-    <blockquote>
-      <p><strong>NOTE:</strong> This option is primarily intended for building the YouTube Plus app based on the beta file you have. In other cases, it is generally not needed.</p>
-    </blockquote>
-    <li>Click on <strong>Sync fork</strong>, and if your branch is out-of-date, click on <strong>Update branch</strong>.</li>
-    <li>Navigate to the <strong>Actions tab</strong> in your forked repository and select <strong>[BETA] Build YouTube Plus app</strong>.</li>
-    <li>Click the <strong>Run workflow</strong> button located on the right side.</li>
-    <li>Mark or unmark the tweaks you want to integrate. Learn more about them in the <a href="#tweak-integration-details">Tweak Integration Details</a> section.</li>
-    <li>Prepare a decrypted .ipa file <em>(we cannot provide this due to legal reasons)</em>, then upload it to a file provider (e.g., filebin.net, filemail.com, or Dropbox is recommended). Paste the URL of the decrypted IPA file in the provided field.</li>
-    <li>Upload your beta tweak file to a file provider and paste direct link to the <strong>URL to the YouTube Plus tweak file</strong> field. You can also change the BundleID and Display Name if desired.</li>
-    <li><strong>NOTE:</strong> Make sure to provide a direct download link to the file, not a link to a webpage. Otherwise, the process will fail.</li>
-    <li>Make sure all inputs are correct, then click <strong>Run workflow</strong> to start the process.</li>
-    <li>Wait for the build to finish. You can download the YouTube Plus app from the releases section of your forked repo. (If you can't find the releases section, go to your forked repo and add /releases to the URL, i.e., github.com/user/YTLite/releases.)</li>
-  </ol>
-</details>
+For a signed DEB without supplying a YouTube IPA, run **Validate free YTPlus
+package** in Actions and download its `YouTubePlus-6.0-free1` artifact.
+For TrollFools or Cyan files, run **Generate free TrollFools/Cyan files**.
 
 ## Supported YouTube Version
+
+The following compatibility information is from upstream. This modified build
+still requires its own device validation.
+
 <ul>
    <li><strong>Latest confirmed:</strong> <em>21.43.5</em></li>
    <li><strong>Date tested:</strong> <em>Nov 03, 2026</em></li>

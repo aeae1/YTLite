@@ -1,84 +1,70 @@
-name: Create YouTube Plus app
-
-on:
+name: Create free YouTube Plus app
+'on':
   workflow_dispatch:
     inputs:
       enable_youpip:
-        description: "Integrate YouPiP"
+        description: Integrate YouPiP
         type: boolean
         required: true
         default: false
-
       enable_ytuhd:
-        description: "Integrate YTUHD"
+        description: Integrate YTUHD
         type: boolean
         required: true
         default: false
-
       enable_yq:
-        description: "Integrate YouQuality"
+        description: Integrate YouQuality
         type: boolean
         required: true
         default: false
-
       enable_ryd:
-        description: "Integrate Return YouTube Dislikes"
+        description: Integrate Return YouTube Dislikes
         type: boolean
         required: true
         default: false
-
       enable_ytabc:
-        description: "Integrate YTABConfig"
+        description: Integrate YTABConfig
         type: boolean
         required: true
         default: false
-
       enable_demc:
-        description: "Integrate DontEatMyContent"
+        description: Integrate DontEatMyContent
         type: boolean
         required: true
         default: false
-
       enable_localization:
-        description: "Update localization files from repo"
+        description: Update localization files from repo
         type: boolean
         required: true
         default: false
-
       ipa_url:
-        description: "URL to the decrypted IPA file"
-        default: ""
+        description: URL to the decrypted IPA file
+        default: ''
         required: true
         type: string
-
-      tweak_version:
-        description: "The version of the tweak to use. Enter the version manually from dayanch96/YTLite/releases or leave default"
-        default: "6.0"
-        required: true
-        type: string
-
       display_name:
-        description: "App Name (Optional)"
-        default: "YouTube"
+        description: App Name (Optional)
+        default: YouTube
         required: true
         type: string
-
       bundle_id:
-        description: "BundleID (Optional)"
-        default: "com.google.ios.youtube"
+        description: BundleID (Optional)
+        default: com.google.ios.youtube
         required: true
         type: string
-
       info_note:
-        description: "TIP: Learn more about integrations in the README via the link below"
-        default: "https://github.com/dayanch96/YTLite#tweak-integration-details"
+        description: 'TIP: Learn more about integrations in the README via the link below'
+        default: https://github.com/dayanch96/YTLite#tweak-integration-details
         type: string
         required: false
-
+      enable_safari:
+        description: Include Open in YouTube Safari extension
+        type: boolean
+        required: true
+        default: false
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build-tweaks:
     uses: ./.github/workflows/_build_tweaks.yml
@@ -90,66 +76,63 @@ jobs:
       enable_ytabc: ${{ inputs.enable_ytabc }}
       enable_demc: ${{ inputs.enable_demc }}
       enable_localization: ${{ inputs.enable_localization }}
-      tweak_version: ${{ inputs.tweak_version }}
-
+      enable_safari: ${{ inputs.enable_safari }}
   package:
     name: Package IPA
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     needs: build-tweaks
+    env:
+      DISPLAY_NAME: ${{ inputs.display_name }}
+      BUNDLE_ID: ${{ inputs.bundle_id }}
+    steps:
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: built-debs
+    - name: Install package reader
+      run: brew install dpkg
+    - name: Verify the incoming artifact inventory
+      run: python3 scripts/build_artifacts.py verify . built-inputs.json
+    - name: Download and validate the base IPA
+      env:
+        IPA_URL: ${{ inputs.ipa_url }}
+      run: python3 scripts/prepare_ipa.py --download source.ipa youtube.ipa
+    - name: Fetch the reviewed packager
+      run: python3 scripts/supply_chain.py source cyan vendor/cyan
+    - name: Package verified inputs
+      run: python3 scripts/package_app.py ipa
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: packaged-app
+        path: |
+          YouTubePlus_6.0-free1.ipa
+          free-build-report.json
+          built-inputs.json
+        if-no-files-found: error
+        retention-days: 3
+  release:
+    name: Save draft release
+    runs-on: ubuntu-24.04
+    needs: package
     permissions:
       contents: write
-
     steps:
-      - name: Download built debs
-        uses: actions/download-artifact@v8
-        with:
-          name: built-debs
-          path: ${{ github.workspace }}
-
-      - name: Hide sensitive inputs
-        uses: levibostian/action-hide-sensitive-inputs@v1
-        with:
-          exclude_inputs: bundle_id,display_name,enable_demc,enable_ryd,enable_ytabc,enable_youpip,enable_yq,enable_ytuhd,enable_localization,info_note,tweak_version
-
-      - name: Download and validate IPA
-        run: |
-          wget "${{ github.event.inputs.ipa_url }}" --no-verbose -O youtube.ipa
-          file_type=$(file --mime-type -b youtube.ipa)
-          if [[ "$file_type" != "application/x-ios-app" && "$file_type" != "application/zip" ]]; then
-            echo "::error::Validation failed: The downloaded file is not a valid IPA. Detected type: $file_type."
-            exit 1
-          fi
-
-      - name: Patch Info.plist
-        run: |
-          unzip -q youtube.ipa -d ipa_tmp
-          plist="$(find ipa_tmp/Payload -maxdepth 1 -name '*.app' | head -n 1)/Info.plist"
-          /usr/libexec/PlistBuddy -c "Delete :UIDesignRequiresCompatibility" "$plist" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Delete :NSFaceIDUsageDescription" "$plist" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :NSFaceIDUsageDescription string 'Face ID is required to authenticate.'" "$plist"
-          rm youtube.ipa
-          (cd ipa_tmp && zip -qry ../youtube.ipa .)
-          rm -rf ipa_tmp
-
-      - name: Install cyan
-        run: pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
-
-      - name: Inject tweaks into IPA
-        run: |
-          tweaks="ytplus.deb OpenYoutubeSafariExtension.appex"
-          for f in *.deb; do
-            [ -f "$f" ] && tweaks="$tweaks $f"
-          done
-          cyan -i youtube.ipa -o YouTubePlus_${{ github.event.inputs.tweak_version }}.ipa -uwef $tweaks -n "${{ github.event.inputs.display_name }}" -b ${{ github.event.inputs.bundle_id }}
-
-      - name: Upload to GitHub Releases
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ytp-${{ github.run_number }}
-          name: YouTubePlus v${{ github.event.inputs.tweak_version }} (${{ github.run_number }})
-          files: YouTubePlus_${{ github.event.inputs.tweak_version }}.ipa
-          draft: true
-
-      - name: Output Release URL
-        run: |
-          echo "::notice::Release available at: https://github.com/${{ github.repository }}/releases"
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: packaged-app
+    - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
+      with:
+        tag_name: ytp-${{ github.run_number }}
+        name: YouTubePlus v6.0-free1 (${{ github.run_number }})
+        files: |
+          YouTubePlus_6.0-free1.ipa
+          free-build-report.json
+          built-inputs.json
+        draft: true
+permissions:
+  contents: read
