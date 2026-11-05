@@ -1,67 +1,106 @@
 name: Validate free YTPlus package
-
-on:
+'on':
   push:
-    branches: [main, free-ytplus-6]
-  pull_request:
-  workflow_dispatch:
-
+    branches:
+    - main
+    - free-ytplus-6
+  pull_request: null
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   validate:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install package and analysis tools
-        run: |
-          brew install dpkg ldid
-          python3 -m pip install -r tests/requirements.txt
-      - name: Download original audited package
-        run: |
-          curl --fail --location --retry 3 \
-            'https://github.com/dayanch96/YTLite/releases/download/v6.0/com.dvntm.ytlite_6.0_iphoneos-arm.deb' \
-            --output ytplus.deb
-          python3 - <<'PY'
-          from pathlib import Path
-          from scripts.free_ytplus import PACKAGE_SHA256, digest, unpack
-          package = Path('ytplus.deb')
-          assert digest(package.read_bytes()) == PACKAGE_SHA256
-          unpack(package, Path('.test-original'))
-          PY
-      - name: Exercise original and modified ARM64 control flow
-        env:
-          YTPLUS_TEST_LIBRARY: .test-original/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib
-        run: python3 -m unittest discover -s tests -v
-      - name: Build and sign free package
-        run: python3 scripts/free_ytplus.py ytplus.deb
-      - name: Validate signed package contents
-        run: |
-          python3 - <<'PY'
-          import json
-          import plistlib
-          from pathlib import Path
-          from scripts.free_ytplus import BUNDLE_PATH, LIBRARY_PATH, PATCHES, account_string, digest, unpack
-          package = Path('ytplus.deb')
-          report = json.loads(Path('free-build-report.json').read_text())
-          assert report['package_sha256'] == digest(package.read_bytes())
-          unpack(package, Path('.test-free'))
-          for path in (Path('.test-free') / BUNDLE_PATH).glob('*.lproj/Localizable.strings'):
-              assert not any(account_string(key) for key in plistlib.loads(path.read_bytes()))
-          data = (Path('.test-free') / LIBRARY_PATH).read_bytes()
-          for name, offset, _, replacement in PATCHES:
-              assert data[offset:offset + len(replacement)] == replacement, name
-          assert 'Version: 6.0-free1' in Path('.test-free/DEBIAN/control').read_text()
-          PY
-          codesign --verify --verbose=2 '.test-free/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib'
-      - uses: actions/upload-artifact@v7
-        with:
-          name: YouTubePlus-6.0-free1
-          path: |
-            ytplus.deb
-            free-build-report.json
-          if-no-files-found: error
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - name: Install hash-locked analysis tools
+      run: 'python3 -m pip install --only-binary=:all: --require-hashes -r tests/requirements.txt'
+    - name: Fetch and unpack the audited core
+      run: |
+        python3 scripts/supply_chain.py asset ytplus_6_0 ytplus.deb
+        python3 - <<'PY'
+        from pathlib import Path
+        from scripts.free_ytplus import unpack
+        unpack(Path('ytplus.deb'), Path('.test-original'))
+        PY
+    - name: Exercise original and modified code and hostile build inputs
+      env:
+        YTPLUS_TEST_LIBRARY: .test-original/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib
+      run: python3 -m unittest discover -s tests -v
+  signing:
+    runs-on: macos-15-intel
+    steps:
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - name: Install signing tools
+      run: brew install dpkg ldid
+    - name: Fetch, patch, sign and verify the package
+      run: |
+        python3 scripts/supply_chain.py asset ytplus_6_0 ytplus.deb
+        python3 scripts/free_ytplus.py ytplus.deb
+        python3 scripts/build_artifacts.py core ytplus.deb .test-free
+        codesign --verify --verbose=2 .test-free/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib
+        python3 scripts/build_artifacts.py write . built-inputs.json
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: YouTubePlus-6.0-free1
+        path: |
+          ytplus.deb
+          free-build-report.json
+          built-inputs.json
+        if-no-files-found: error
+  integrations:
+    name: Build every supported optional integration
+    uses: ./.github/workflows/_build_tweaks.yml
+    with:
+      enable_youpip: true
+      enable_ytuhd: true
+      enable_yq: true
+      enable_ryd: true
+      enable_ytabc: true
+      enable_demc: true
+      enable_localization: false
+      enable_safari: true
+  formats:
+    name: Validate Cyan and TrollFools packaging
+    needs: integrations
+    runs-on: macos-15-intel
+    steps:
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+      with:
+        name: built-debs
+    - name: Install package reader
+      run: brew install dpkg
+    - name: Verify, then generate both formats
+      run: |
+        python3 scripts/build_artifacts.py verify . built-inputs.json
+        python3 scripts/supply_chain.py source cyan vendor/cyan
+        python3 scripts/package_app.py cyan
+        python3 scripts/package_app.py trollfools
+        python3 - <<'PY'
+        import json, zipfile
+        with zipfile.ZipFile('cyan_YouTubePlus_6.0-free1.cyan') as archive:
+            assert archive.testzip() is None
+            assert json.loads(archive.read('config.json'))['f'] is True
+            assert 'inject/ytplus.deb' in archive.namelist()
+            assert any('/OpenYouTubeSafariExtension.appex/' in name for name in archive.namelist())
+        with zipfile.ZipFile('TrollFools_YouTubePlus_6.0-free1.zip') as archive:
+            assert archive.testzip() is None
+            assert 'YTLite.dylib' in archive.namelist()
+            assert any(name.startswith('YTLite.bundle/') for name in archive.namelist())
+        PY

@@ -1,0 +1,248 @@
+{
+  "review_date": "2026-11-05",
+  "scope": "Published MaxTube build components and the dependencies of this fork, not an unidentified Telegram IPA. Hashes identify inspected bytes; they do not certify publisher intent.",
+  "sources": [
+    {
+      "repo": "PoomSmart/YouTubeHeader",
+      "commit": "4b9977e2b243fcb143395e0a20d975a32eaa93e0",
+      "date": "2026-10-17T06:27:13Z",
+      "archive_sha256": "0e2f43b21f486b524dc0cf0804f1af78021c3b41753793d723c9e421b732104c",
+      "archive_bytes": 41337,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YTVideoOverlay",
+      "commit": "f5bfd3f0cc7b3d18ea45e505da6c3120a26b89d2",
+      "date": "2026-11-01T04:09:44Z",
+      "archive_sha256": "a8818d0c4ff7c5c0889a7c59fedefebd25a4d64e5a2f91f47e8b9f37fd8edde7",
+      "archive_bytes": 12459,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/Return-YouTube-Dislikes",
+      "commit": "3347d770d699653fae6597bfe3b36ee896fbc9e8",
+      "date": "2026-06-30T15:11:15Z",
+      "archive_sha256": "b8109ef68346f3351a5876d990b827beb44489124e01c37b0773d60cce31b80f",
+      "archive_bytes": 54965,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YouPiP",
+      "commit": "034477a48c8ec18736e26d054106df88c1f0deb3",
+      "date": "2026-10-04T02:57:29Z",
+      "archive_sha256": "b1030e840dd30ff85489dbab1c78c43a0df0b2a12801864bf29076691ab01940",
+      "archive_bytes": 20717,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YTABConfig",
+      "commit": "b171adb9f1595484eca2ecf9d53e6eb7612c95f3",
+      "date": "2026-06-30T15:10:06Z",
+      "archive_sha256": "03e9daa516d6f3fc6e91610796b65f24ddb99f5d1e0055c9b9066ea5f5e1e677",
+      "archive_bytes": 32301,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/PSHeader",
+      "commit": "7f56cc61f11205864bc2305641ecb281be8c0ace",
+      "date": "2026-11-03T10:22:29Z",
+      "archive_sha256": "9cf074f0f030386726f4e52a5d26bbf263f41e39c8b8326625b918b6dfde3be1",
+      "archive_bytes": 20010,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YouGroupSettings",
+      "commit": "4697fb3e277303e0d611362982d9ddaea0424485",
+      "date": "2026-10-01T13:57:58Z",
+      "archive_sha256": "1256ea68f1afe8572a4a4cef9e5ba85ccf5d30fddbc4c870c49fe523b2ad8d25",
+      "archive_bytes": 181423,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "Tonwalter888/YTUHD",
+      "commit": "cf266c2a351eb4f97e6bb2fb129509c501bdf207",
+      "date": "2026-07-03T08:04:01Z",
+      "archive_sha256": "c55edbfa6e97500b18de520891603cc410a19c91cf4cf95e2ceffef59c0ae92f",
+      "archive_bytes": 33005,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "asdfzxcvbn/pyzule-rw",
+      "commit": "740d3716dcd98c20c000f12cdb88f1f0b2a533a4",
+      "date": "2025-03-18T23:00:40Z",
+      "archive_sha256": "0804a8e741322dcab245323ffc1f589b41fcace5398c6efde4b5bfb275a1fd17",
+      "archive_bytes": 8450874,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YouSpeed",
+      "commit": "f3de005a8a4c9356699395510799221a4c42d72b",
+      "date": "2026-11-01T04:09:40Z",
+      "archive_sha256": "ec6015de05b8d8985bba6871c6b7411580d4dbad0a9bba9711ccfae7e6bf033d",
+      "archive_bytes": 8834,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "BillyCurtis/OpenYouTubeSafariExtension",
+      "commit": "c87b5d5551b406477dca883158572f803251f52c",
+      "date": "2024-02-05T03:40:14Z",
+      "archive_sha256": "90ac2cf27c2976e61422b7c43afc461b0ed16f54aa7492506ffee1a05d8ae2b4",
+      "archive_bytes": 225710,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "PoomSmart/YouQuality",
+      "commit": "3199d594bbec58f419107fc7b1d9c28f209bcd04",
+      "date": "2026-03-27T11:26:58Z",
+      "archive_sha256": "efd44a9303de957e1fb9c14ae28df268957aae603d357652d6e438a0f51680f2",
+      "archive_bytes": 4423,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "therealFoxster/DontEatMyContent",
+      "commit": "176adb9a163741c3cf74d9ad66d55e6643589b30",
+      "date": "2026-03-05T02:51:08Z",
+      "archive_sha256": "6f447d110262fcf6ea51cb453a68127594db4f055bc092c4775e0ae72e58d76f",
+      "archive_bytes": 17844,
+      "selected_by_this_fork": true
+    },
+    {
+      "repo": "castdrian/Gonerino",
+      "commit": "91a15251f2a956a1cb1d99fe42fe1a2791e79fa3",
+      "date": "2026-10-03T18:07:00Z",
+      "archive_sha256": "d81cefe748e3da1b13df2ad678db9b4b07de7fe026809afd970cf6f4d5130e08",
+      "archive_bytes": 2324151,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "Mark02-2012/YTLowContrastMode",
+      "commit": "7cca84d7adba170b4e739598b4bd4fbdc1f9714b",
+      "date": "2026-08-23T16:10:32Z",
+      "archive_sha256": "b32fe8472ac675cfd934e9fb4a0010706fdd5b90596d1027b8c3c07a5597e4da",
+      "archive_bytes": 7308,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "fosterbarnes/YTweaks",
+      "commit": "07def8394e7d47aecb5fb58728ef86eab872534e",
+      "date": "2026-07-06T08:02:42Z",
+      "archive_sha256": "48ab82bf3797d1346575f539cd041fe72795bcb8a28fff1ee84340fb7448b92c",
+      "archive_bytes": 82224,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "irum0320/VolumeBoostYT",
+      "commit": "c2feb28629dbf2a7d525be8dfbfc8e6d73a1293f",
+      "date": "2026-03-18T02:55:50Z",
+      "archive_sha256": "64926d7a1d04301b6e254d296167641c3fb3a52427e7ae7a250958762f752343",
+      "archive_bytes": 8054,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "PoomSmart/YouChooseQuality",
+      "commit": "700ed1c019346d4bf03b4441c52bbb49dc92b575",
+      "date": "2026-10-06T13:32:32Z",
+      "archive_sha256": "c62a7e7b3b2a60e3d04984a5826128b3d0f64c3f7ba69aa00249894192a78af3",
+      "archive_bytes": 6739,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "Mark02-2012/YTPlaybackFix",
+      "commit": "0fa391d01b3b2066c1593ce3f3b8ec351f9f38d4",
+      "date": "2026-10-22T14:16:12Z",
+      "archive_sha256": "63a0bd3cb8d5440b7ab2a3edc211c00f44a7a4340d196270d3e0c4611334e710",
+      "archive_bytes": 10206,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "bhackel/YouLoop",
+      "commit": "43c39ccfba454e0f602c39524b173a97f5cd774a",
+      "date": "2026-04-17T17:40:16Z",
+      "archive_sha256": "7d414d153b3171216cabae3233ee5be6a28324c243018fb9c20cb5a906508a9a",
+      "archive_bytes": 8181,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "Tonwalter888/YouShare",
+      "commit": "02df06af94f629986a9c483df4bdf0610cc01926",
+      "date": "2026-08-01T11:23:41Z",
+      "archive_sha256": "caa30c4ad4711dd24cba9fc48bef4609225cea2c52ca2b68e2b7b302b2064923",
+      "archive_bytes": 13766,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "PoomSmart/YouGetCaption",
+      "commit": "4451dd93190a20ec3386ca006b8bf6523a85fc3f",
+      "date": "2026-02-21T04:22:56Z",
+      "archive_sha256": "250742fbd640d6b72496933851e85e4dd61c360078f948481f885a15f544350f",
+      "archive_bytes": 7348,
+      "selected_by_this_fork": false
+    },
+    {
+      "repo": "PoomSmart/YouMute",
+      "commit": "d2cf6cce286fc9dd6c1ae6e24e5f1b7961564169",
+      "date": "2026-05-17T09:08:10Z",
+      "archive_sha256": "e9e4f7af63455e3c5b95c154fb7c95349bc6bfbde73a88a4ed0678f42ae057c2",
+      "archive_bytes": 4287,
+      "selected_by_this_fork": false
+    }
+  ],
+  "packages": [
+    {
+      "name": "max-beta",
+      "url": "https://github.com/Mark02-2012/MaxTube/releases/download/YTPlusVersions/com.dvntm.ytlite_6.0b2_iphoneos-arm.deb",
+      "sha256": "91c4fff1727cfad945bf166848d40b7de9115229dbcd2b7761289fd1ef02824c",
+      "published_sha256": "91c4fff1727cfad945bf166848d40b7de9115229dbcd2b7761289fd1ef02824c",
+      "bytes": 13680936
+    },
+    {
+      "name": "official-final",
+      "url": "https://github.com/dayanch96/YTLite/releases/download/v6.0/com.dvntm.ytlite_6.0_iphoneos-arm.deb",
+      "sha256": "9822234413eeb085faec8f77864360156900bd62f281294b38b05e066777a55d",
+      "published_sha256": "9822234413eeb085faec8f77864360156900bd62f281294b38b05e066777a55d",
+      "bytes": 14028894
+    },
+    {
+      "name": "official-5.2.2",
+      "url": "https://github.com/dayanch96/YTLite/releases/download/v5.2.2/com.dvntm.ytlite_5.2.2_iphoneos-arm.deb",
+      "sha256": "132db2162a7a5163c36a9c6ce5637f45139c035279bacd36e8d3b97feba4ebc7",
+      "published_sha256": "132db2162a7a5163c36a9c6ce5637f45139c035279bacd36e8d3b97feba4ebc7",
+      "bytes": 7361308
+    },
+    {
+      "name": "max-5.2.2",
+      "url": "https://github.com/Mark02-2012/MaxTube/releases/download/YTPlusVersions/com.dvntm.ytlite_5.2.2_iphoneos-arm.deb",
+      "sha256": "b06e867fc01db271d0e44e1bccdcc603f30ec0e5a31d00068e020d0ed197b74e",
+      "published_sha256": "b06e867fc01db271d0e44e1bccdcc603f30ec0e5a31d00068e020d0ed197b74e",
+      "bytes": 7268424
+    },
+    {
+      "name": "max-queue",
+      "url": "https://files.catbox.moe/glhygu.deb",
+      "sha256": "a8b66904c84ddab3c213c2463b4d734521b10e2527851b0081c6f4fac49d8d67",
+      "published_sha256": null,
+      "bytes": 17462
+    },
+    {
+      "name": "max-extras",
+      "url": "https://files.catbox.moe/88okf5.deb",
+      "sha256": "a0d784bd9d5789a9379358204bd3bed34110b4e1d0ca68dd5da8a22450f96fe9",
+      "published_sha256": null,
+      "bytes": 4572
+    }
+  ],
+  "matched_5_2_2_code_difference": {
+    "changed_instruction_words": 16,
+    "changed_code_bytes": 54,
+    "non_text_file_backed_sections": "identical"
+  },
+  "runtime_loader": {
+    "source": "cyan snapshot in dependencies.lock.json",
+    "file": "cyan/extras/CydiaSubstrate.framework/CydiaSubstrate",
+    "sha256": "bca859c9413cb85ca0d3ecfca494c61d67e4acd5846660e618526a152963965b"
+  },
+  "safari_executable": {
+    "source": "optional Safari snapshot in dependencies.lock.json",
+    "sha256": "ddf0746cc31e1e7b322eb0bf3c67eb6304b6175c4ef2333c53dcfb0766c5a554"
+  }
+}

@@ -8,7 +8,8 @@ from unicorn.arm64_const import *
 
 class Harness:
     def __init__(self, path, verbose=False):
-        self.binary = lief.MachO.parse(str(path)).at(0)
+        self.container = lief.MachO.parse(str(path))
+        self.binary = self.container.at(0)
         self.uc = U.Uc(U.UC_ARCH_ARM64, U.UC_MODE_ARM)
         self.imports = {}
         self.import_addrs = {}

@@ -1,12 +1,15 @@
-# YouTube Plus 6.0 Free fork
+# Free YTPlus 6.0 build
 
-This fork builds **6.0-free1**, using the 6.0 library with YTPlus account activation,
-subscription checks, account startup, and subscription controls disabled.
-It keeps the 6.0 implementation instead of downgrading to an earlier free release.
+This fork builds the final YTPlus 6.0 package without YTPlus account activation. It keeps the original feature settings and uses a published, version-specific patch. The current upstream implementation is distributed as a compiled library; the older source files here are not its source code.
 
-**Status:** experimental. ARM64 control-flow tests are included, but complete
-functionality still needs verification on an iOS device. See
-[build details and validation limits](docs/free-build.md).
+- [How this build works and what is tested](docs/free-build.md)
+- [Security review and dependency choices](docs/security-review.md)
+- The main GitHub Actions workflow accepts an original decrypted YouTube IPA. All optional add-ons, including the Safari extension, are off by default.
+- Use a normal or separate bundle ID as needed. Prepared IPAs still require your own sideload signing. Preserved URL schemes do not establish that every app's universal links will work after re-signing.
+
+The build downloads only the locked core package and selected dependency snapshots. Unknown core versions, changed dependency bytes, malformed IPAs, and mismatched build artifacts fail validation. iPhone smoke testing is still required.
+
+---
 
 The original project's description and integration information follow below.
 
@@ -81,7 +84,7 @@ Review by [@qbap](https://github.com/qbap) on ONE Jailbreak: https://onejailbrea
 > If this your first time, complete following steps before starting:
 >
 > 1. Fork this repository using the fork button on the top right
-> 2. On your forked repository, go to **Repository Settings** > **Actions**, enable **Read and Write** permissions.
+> 2. Open the **Actions** tab in your fork and enable workflows. Job permissions are declared in the workflow files.
 
 <details>
   <summary>How to build the YouTube Plus app</summary>

@@ -1,225 +1,210 @@
 name: Build Tweaks (Helper)
-
-on:
+'on':
   workflow_call:
     inputs:
       enable_youpip:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_ytuhd:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_yq:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_ryd:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_ytabc:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_demc:
         type: boolean
-        required: true
+        required: false
         default: false
-
       enable_localization:
         type: boolean
-        required: true
+        required: false
         default: false
-
+      enable_safari:
+        type: boolean
+        required: false
+        default: false
 jobs:
   build-tweaks:
     name: Build Tweaks
-    runs-on: macos-latest
-
+    runs-on: macos-15-intel
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install Dependencies
-        run: brew install make ldid dpkg
-
-      - name: Set PATH environment variable
-        run: |
-          echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
-          echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
-
-      - name: Cache Theos
-        if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc }}
-        id: theos
-        uses: actions/cache@v5
-        env:
-          cache-name: theos_cache_9bc7340
-        with:
-          path: theos/
-          key: ${{ env.cache-name }}
-          restore-keys: ${{ env.cache-name }}
-
-      - name: Setup Theos
-        if: ${{ (inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc) && steps.theos.outputs.cache-hit != 'true' }}
-        uses: actions/checkout@v6
-        with:
-          repository: theos/theos
-          ref: 9bc73406cf80b711ef4d02c15ff1dedc4478a275
-          path: theos
-          submodules: recursive
-
-      - name: Download iOS SDK
-        if: ${{ (inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc) && steps.theos.outputs.cache-hit != 'true' }}
-        run: |
-          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/theos/sdks/
-          cd sdks
-          git sparse-checkout set --no-cone iPhoneOS16.5.sdk
-          git checkout
-          mv *.sdk $THEOS/sdks
-
-      - name: Download audited YouTube Plus 6.0
-        run: |
-          curl --fail --location --retry 3 \
-            "https://github.com/dayanch96/YTLite/releases/download/v6.0/com.dvntm.ytlite_6.0_iphoneos-arm.deb" \
-            --output ytplus.deb
-
-      - name: Build offline version without subscription requirements
-        env:
-          UPDATE_LOCALIZATION: ${{ inputs.enable_localization }}
-        run: |
-          args=()
-          if [ "$UPDATE_LOCALIZATION" = "true" ]; then
-            args+=(--localizations "layout/Library/Application Support/YTLite.bundle")
-          fi
-          python3 scripts/free_ytplus.py ytplus.deb "${args[@]}"
-
-      - name: Clone YouTubeHeader
-        if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc }}
-        run: |
-          if [ -d "$THEOS/include/YouTubeHeader" ]; then
-            cd $THEOS/include/YouTubeHeader && git pull
-          else
-            cd $THEOS/include && git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git
-          fi
-          if [ "${{ inputs.enable_demc }}" = "true" ]; then
-            rm -rf "$THEOS/include/YTHeaders"
-            cp -r "$THEOS/include/YouTubeHeader" "$THEOS/include/YTHeaders"
-          fi
-
-      - name: Clone PSHeader
-        if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc }}
-        run: |
-          if [ -d "$THEOS/include/PSHeader" ]; then
-            cd $THEOS/include/PSHeader && git pull
-          else
-            cd $THEOS/include && git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git
-          fi
-
-      - name: Clone YouPiP
-        if: ${{ inputs.enable_youpip }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
-
-      - name: Clone YTUHD
-        if: ${{ inputs.enable_ytuhd }}
-        run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
-
-      - name: Clone Return-YouTube-Dislikes
-        if: ${{ inputs.enable_ryd }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/Return-YouTube-Dislikes.git
-
-      - name: Clone YTABConfig
-        if: ${{ inputs.enable_ytabc }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTABConfig.git
-
-      - name: Clone YouGroupSettings
-        if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_demc }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouGroupSettings.git
-
-      - name: Clone YouQuality
-        if: ${{ inputs.enable_yq }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouQuality.git
-
-      - name: Clone YTVideoOverlay
-        if: ${{ inputs.enable_yq || inputs.enable_youpip || inputs.enable_ytuhd }}
-        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
-
-      - name: Clone DontEatMyContent
-        if: ${{ inputs.enable_demc }}
-        run: git clone --quiet --depth=1 https://github.com/therealFoxster/DontEatMyContent.git
-
-      - name: Build YouPiP
-        if: ${{ inputs.enable_youpip }}
-        run: |
-          cd YouPiP && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../youpip.deb
-
-      - name: Build YTUHD
-        if: ${{ inputs.enable_ytuhd }}
-        run: |
-          cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../ytuhd.deb
-
-      - name: Build Return-YouTube-Dislikes
-        if: ${{ inputs.enable_ryd }}
-        run: |
-          cd Return-YouTube-Dislikes && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../ryd.deb
-
-      - name: Build YTABConfig
-        if: ${{ inputs.enable_ytabc }}
-        run: |
-          cd YTABConfig && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../ytabc.deb
-
-      - name: Build YouGroupSettings
-        if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_demc }}
-        run: |
-          cd YouGroupSettings && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../ygs.deb
-
-      - name: Build YouQuality
-        if: ${{ inputs.enable_yq }}
-        run: |
-          cd YouQuality && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../yq.deb
-
-      - name: Build YTVideoOverlay
-        if: ${{ inputs.enable_yq || inputs.enable_youpip || inputs.enable_ytuhd }}
-        run: |
-          cd YTVideoOverlay && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../ytvo.deb
-
-      - name: Build DontEatMyContent
-        if: ${{ inputs.enable_demc }}
-        run: |
-          cd DontEatMyContent && make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ../demc.deb
-
-      - name: Clone Open in YouTube (Safari extension)
-        run: |
-          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/BillyCurtis/OpenYouTubeSafariExtension
-          cd OpenYoutubeSafariExtension
-          git sparse-checkout set --no-cone OpenYoutubeSafariExtension.appex
-          git checkout
-          mv *.appex ..
-
-      - name: Upload built debs as artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: built-debs
-          path: |
-            *.deb
-            *.appex
-            free-build-report.json
-          if-no-files-found: ignore
-          retention-days: 1
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - name: Install platform build tools
+      run: brew install make ldid dpkg
+    - name: Set build paths
+      run: |
+        echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+        echo "THEOS=$GITHUB_WORKSPACE/theos" >> "$GITHUB_ENV"
+    - name: Fetch the reviewed core package
+      run: python3 scripts/supply_chain.py asset ytplus_6_0 ytplus.deb
+    - name: Build the offline core
+      env:
+        UPDATE_LOCALIZATION: ${{ inputs.enable_localization }}
+      run: |
+        args=()
+        if [ "$UPDATE_LOCALIZATION" = "true" ]; then
+          args+=(--localizations "layout/Library/Application Support/YTLite.bundle")
+        fi
+        python3 scripts/free_ytplus.py ytplus.deb "${args[@]}"
+        python3 scripts/build_artifacts.py core ytplus.deb .verified-core
+        codesign --verify --verbose=2 .verified-core/Library/MobileSubstrate/DynamicLibraries/YTLite.dylib
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      name: Checkout the pinned Theos toolchain
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc
+        }}
+      with:
+        repository: theos/theos
+        ref: 9bc73406cf80b711ef4d02c15ff1dedc4478a275
+        path: theos
+        submodules: recursive
+        persist-credentials: false
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      name: Checkout the pinned iOS SDK
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc
+        }}
+      with:
+        repository: theos/sdks
+        ref: 0222fd5413cf4b9af096f37b4621afa2688572f7
+        path: theos/sdks
+        sparse-checkout: iPhoneOS16.5.sdk
+        persist-credentials: false
+    - name: Fetch reviewed headers
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc
+        }}
+      run: |
+        python3 scripts/supply_chain.py source youtube_headers vendor/YouTubeHeader
+        python3 scripts/supply_chain.py source ps_headers vendor/PSHeader
+        rm -rf "$THEOS/include/YouTubeHeader" "$THEOS/include/PSHeader"
+        cp -R vendor/YouTubeHeader "$THEOS/include/YouTubeHeader"
+        cp -R vendor/PSHeader "$THEOS/include/PSHeader"
+    - name: Provide the reviewed legacy header alias
+      if: ${{ inputs.enable_demc }}
+      run: |
+        rm -rf "$THEOS/include/YTHeaders"
+        cp -R vendor/YouTubeHeader "$THEOS/include/YTHeaders"
+    - name: Fetch reviewed YouPiP
+      if: ${{ inputs.enable_youpip }}
+      run: python3 scripts/supply_chain.py source youpip vendor/YouPiP
+    - name: Fetch reviewed YTUHD
+      if: ${{ inputs.enable_ytuhd }}
+      run: python3 scripts/supply_chain.py source ytuhd vendor/YTUHD
+    - name: Fetch reviewed Return-YouTube-Dislikes
+      if: ${{ inputs.enable_ryd }}
+      run: python3 scripts/supply_chain.py source ryd vendor/Return-YouTube-Dislikes
+    - name: Fetch reviewed YTABConfig
+      if: ${{ inputs.enable_ytabc }}
+      run: python3 scripts/supply_chain.py source ytabc vendor/YTABConfig
+    - name: Fetch reviewed YouQuality
+      if: ${{ inputs.enable_yq }}
+      run: python3 scripts/supply_chain.py source quality vendor/YouQuality
+    - name: Fetch reviewed DontEatMyContent
+      if: ${{ inputs.enable_demc }}
+      run: python3 scripts/supply_chain.py source dont_eat_content vendor/DontEatMyContent
+    - name: Fetch reviewed YouGroupSettings
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc
+        }}
+      run: python3 scripts/supply_chain.py source group_settings vendor/YouGroupSettings
+    - name: Fetch reviewed YTVideoOverlay
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq }}
+      run: python3 scripts/supply_chain.py source video_overlay vendor/YTVideoOverlay
+    - name: Build YouPiP
+      if: ${{ inputs.enable_youpip }}
+      run: |
+        cd vendor/YouPiP
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../youpip.deb"
+    - name: Build YTUHD
+      if: ${{ inputs.enable_ytuhd }}
+      run: |
+        cd vendor/YTUHD
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../ytuhd.deb"
+    - name: Build Return-YouTube-Dislikes
+      if: ${{ inputs.enable_ryd }}
+      run: |
+        cd vendor/Return-YouTube-Dislikes
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../ryd.deb"
+    - name: Build YTABConfig
+      if: ${{ inputs.enable_ytabc }}
+      run: |
+        cd vendor/YTABConfig
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../ytabc.deb"
+    - name: Build YouQuality
+      if: ${{ inputs.enable_yq }}
+      run: |
+        cd vendor/YouQuality
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../yq.deb"
+    - name: Build DontEatMyContent
+      if: ${{ inputs.enable_demc }}
+      run: |
+        cd vendor/DontEatMyContent
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../demc.deb"
+    - name: Build YouGroupSettings
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_ytabc || inputs.enable_demc
+        }}
+      run: |
+        cd vendor/YouGroupSettings
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../ygs.deb"
+    - name: Build YTVideoOverlay
+      if: ${{ inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq }}
+      run: |
+        cd vendor/YTVideoOverlay
+        make clean package DEBUG=0 FINALPACKAGE=1
+        packages=(packages/*.deb)
+        [ "${#packages[@]}" -eq 1 ] && [ -f "${packages[0]}" ]
+        cp "${packages[0]}" "../../ytvo.deb"
+    - name: Fetch the reviewed optional Safari extension
+      if: ${{ inputs.enable_safari }}
+      run: |
+        python3 scripts/supply_chain.py source safari vendor/SafariExtension
+        cp -R vendor/SafariExtension/OpenYouTubeSafariExtension.appex .
+    - name: Record exact build artifacts
+      run: python3 scripts/build_artifacts.py write . built-inputs.json
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      name: Upload verified build inputs
+      with:
+        name: built-debs
+        path: |
+          *.deb
+          OpenYouTubeSafariExtension.appex
+          free-build-report.json
+          built-inputs.json
+        if-no-files-found: error
+        retention-days: 1
+permissions:
+  contents: read

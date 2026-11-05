@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "review_date": "2026-11-05",
+  "sources": {
+    "cyan": {
+      "repository": "asdfzxcvbn/pyzule-rw",
+      "commit": "740d3716dcd98c20c000f12cdb88f1f0b2a533a4",
+      "sha256": "0804a8e741322dcab245323ffc1f589b41fcace5398c6efde4b5bfb275a1fd17"
+    },
+    "youtube_headers": {
+      "repository": "PoomSmart/YouTubeHeader",
+      "commit": "4b9977e2b243fcb143395e0a20d975a32eaa93e0",
+      "sha256": "0e2f43b21f486b524dc0cf0804f1af78021c3b41753793d723c9e421b732104c"
+    },
+    "ps_headers": {
+      "repository": "PoomSmart/PSHeader",
+      "commit": "7f56cc61f11205864bc2305641ecb281be8c0ace",
+      "sha256": "9cf074f0f030386726f4e52a5d26bbf263f41e39c8b8326625b918b6dfde3be1"
+    },
+    "group_settings": {
+      "repository": "PoomSmart/YouGroupSettings",
+      "commit": "4697fb3e277303e0d611362982d9ddaea0424485",
+      "sha256": "1256ea68f1afe8572a4a4cef9e5ba85ccf5d30fddbc4c870c49fe523b2ad8d25"
+    },
+    "video_overlay": {
+      "repository": "PoomSmart/YTVideoOverlay",
+      "commit": "f5bfd3f0cc7b3d18ea45e505da6c3120a26b89d2",
+      "sha256": "a8818d0c4ff7c5c0889a7c59fedefebd25a4d64e5a2f91f47e8b9f37fd8edde7"
+    },
+    "youpip": {
+      "repository": "PoomSmart/YouPiP",
+      "commit": "034477a48c8ec18736e26d054106df88c1f0deb3",
+      "sha256": "b1030e840dd30ff85489dbab1c78c43a0df0b2a12801864bf29076691ab01940"
+    },
+    "ytuhd": {
+      "repository": "Tonwalter888/YTUHD",
+      "commit": "cf266c2a351eb4f97e6bb2fb129509c501bdf207",
+      "sha256": "c55edbfa6e97500b18de520891603cc410a19c91cf4cf95e2ceffef59c0ae92f"
+    },
+    "ryd": {
+      "repository": "PoomSmart/Return-YouTube-Dislikes",
+      "commit": "3347d770d699653fae6597bfe3b36ee896fbc9e8",
+      "sha256": "b8109ef68346f3351a5876d990b827beb44489124e01c37b0773d60cce31b80f"
+    },
+    "ytabc": {
+      "repository": "PoomSmart/YTABConfig",
+      "commit": "b171adb9f1595484eca2ecf9d53e6eb7612c95f3",
+      "sha256": "03e9daa516d6f3fc6e91610796b65f24ddb99f5d1e0055c9b9066ea5f5e1e677"
+    },
+    "quality": {
+      "repository": "PoomSmart/YouQuality",
+      "commit": "3199d594bbec58f419107fc7b1d9c28f209bcd04",
+      "sha256": "efd44a9303de957e1fb9c14ae28df268957aae603d357652d6e438a0f51680f2"
+    },
+    "dont_eat_content": {
+      "repository": "therealFoxster/DontEatMyContent",
+      "commit": "176adb9a163741c3cf74d9ad66d55e6643589b30",
+      "sha256": "6f447d110262fcf6ea51cb453a68127594db4f055bc092c4775e0ae72e58d76f"
+    },
+    "safari": {
+      "repository": "BillyCurtis/OpenYouTubeSafariExtension",
+      "commit": "c87b5d5551b406477dca883158572f803251f52c",
+      "sha256": "90ac2cf27c2976e61422b7c43afc461b0ed16f54aa7492506ffee1a05d8ae2b4"
+    }
+  },
+  "assets": {
+    "ytplus_6_0": {
+      "url": "https://github.com/dayanch96/YTLite/releases/download/v6.0/com.dvntm.ytlite_6.0_iphoneos-arm.deb",
+      "sha256": "9822234413eeb085faec8f77864360156900bd62f281294b38b05e066777a55d",
+      "max_bytes": 20000000
+    }
+  },
+  "toolchains": {
+    "theos": {
+      "repository": "theos/theos",
+      "commit": "9bc73406cf80b711ef4d02c15ff1dedc4478a275"
+    },
+    "sdk": {
+      "repository": "theos/sdks",
+      "commit": "0222fd5413cf4b9af096f37b4621afa2688572f7",
+      "directory": "iPhoneOS16.5.sdk"
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # Offline YouTube Plus 6.0 build
 
+Dependency and workflow hardening is described in [the security review](security-review.md).
+
 This fork keeps the 6.0 implementation and modifies the published arm64 library
 at build time. It does not replace it with the older 3.0.1 source files or the
 5.2b4 release.
